@@ -1,0 +1,33 @@
+/** Diegetic BIOS dump. Timing lives in BootSequence; this is the script, not a real kernel. */
+export const BOOT_LINE_MS = 90;
+
+export const bootLines = [
+  '[BIOS] POLYMATHIC OPERATING SYSTEM v7.3.1 — Codename: DAEDALUS',
+  '[BIOS] Copyright (c) 2024 Ars Combinatoria Institute',
+  '[INIT] Loading cognitive architecture...',
+  '[INIT] Mounting epistemological frameworks...',
+  '[KERN] Initializing neural substrate ████████████ OK',
+  '[KERN] Synaptic bus width: 10^14 connections/sec',
+  '[KERN] Creativity index calibrated: POLYMATHIC',
+  '[MEM]  Allocating 847 TB semantic memory...',
+  '[MEM]  Loading cultural database: 4,712 years of human knowledge',
+  '[FS]   Mounting /dev/imagination ████████████ OK',
+  '[FS]   Mounting /dev/intuition ████████████ OK',
+  '[FS]   Mounting /dev/aesthetics ████████████ OK',
+  '[NET]  Connecting to noosphere...',
+  '[NET]  Akashic records: SYNCHRONIZED',
+  '[GPU]  Rendering engine: QUALIA v4.2',
+  '[AUD]  Synesthetic audio processor: ONLINE',
+  '[SYS]  Loading obscure references module...',
+  '[SYS]  Compiling 47,000 cross-disciplinary connections...',
+  '[SYS]  Genius quotient threshold: EXCEEDED',
+  '[SYS]  Imposter syndrome suppressor: ACTIVE',
+  '[OK]   All systems nominal. Welcome, Polymath.',
+  '',
+  '  ╔══════════════════════════════════════════════╗',
+  '  ║  "The only true wisdom is in knowing you     ║',
+  '  ║   know nothing." — Σωκράτης                  ║',
+  '  ╚══════════════════════════════════════════════╝',
+  '',
+  '[BOOT] Launching DAEDALUS Desktop Environment...',
+];

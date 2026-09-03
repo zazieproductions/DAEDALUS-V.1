@@ -1,25 +1,30 @@
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://vite.dev/config/
-export default defineConfig(async ({ mode }) => {
-  const plugins = [react(), tailwindcss()];
-  try {
-    // @ts-ignore
-    const m = await import('./.vite-source-tags.js');
-    plugins.push(m.sourceTags());
-  } catch {}
-
-  const env = loadEnv(mode, process.cwd(), ['VITE_', 'NEXT_PUBLIC_']);
-  const processEnvDefines: Record<string, string> = {};
-  for (const [key, value] of Object.entries(env)) {
-    processEnvDefines[`process.env.${key}`] = JSON.stringify(value);
-  }
+/**
+ * GitHub Pages serves this repo from /DAEDALUS-V.1/.
+ * Local dev and screenshot capture keep base at /.
+ * Override with BASE_PATH if deploying to another subdirectory.
+ */
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), ['VITE_']);
+  const base = process.env.BASE_PATH || env.VITE_BASE_PATH || '/';
 
   return {
-    plugins,
-    envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
-    define: processEnvDefines,
+    plugins: [react(), tailwindcss()],
+    base,
+    envPrefix: ['VITE_'],
+    build: {
+      sourcemap: true,
+      assetsDir: 'assets',
+    },
+    preview: {
+      host: true,
+      port: 4173,
+    },
+    server: {
+      host: true,
+    },
   };
-})
+});

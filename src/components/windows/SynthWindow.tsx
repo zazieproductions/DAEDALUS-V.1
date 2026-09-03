@@ -1,50 +1,54 @@
-import { useState, useEffect } from 'react';
-import { ideationPrompts } from '../../lib/store';
+import { useState } from 'react';
+import { ideationPrompts, ideationDomains } from '../../data/catalogs';
 import { Shuffle, Lightbulb, Copy, Check, Sparkles } from 'lucide-react';
+
+function rollConnections(): string[] {
+  const shuffled = [...ideationDomains].sort(() => Math.random() - 0.5);
+  return [`${shuffled[0]} × ${shuffled[1]}`, `${shuffled[2]} × ${shuffled[3]}`, `${shuffled[4]} × ${shuffled[5]}`];
+}
 
 export default function SynthWindow() {
   const [currentPrompt, setCurrentPrompt] = useState(0);
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [connections, setConnections] = useState<string[]>([]);
-
-  const domains = ['topology', 'semiotics', 'mycology', 'game theory', 'phenomenology', 'acoustics', 'origami', 'cryptography', 'choreography', 'fermentation'];
+  const [connections, setConnections] = useState<string[]>(() => rollConnections());
 
   const generateConnections = () => {
     setGenerating(true);
-    const shuffled = [...domains].sort(() => Math.random() - 0.5);
-    const pairs = [
-      `${shuffled[0]} × ${shuffled[1]}`,
-      `${shuffled[2]} × ${shuffled[3]}`,
-      `${shuffled[4]} × ${shuffled[5]}`,
-    ];
-    setTimeout(() => {
+    const pairs = rollConnections();
+    window.setTimeout(() => {
       setConnections(pairs);
       setGenerating(false);
     }, 800);
   };
 
-  useEffect(() => { generateConnections(); }, []);
-
   const handleCopy = () => {
-    navigator.clipboard.writeText(ideationPrompts[currentPrompt]);
+    void navigator.clipboard.writeText(ideationPrompts[currentPrompt]);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    window.setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="h-full flex flex-col p-3 font-mono text-xs" style={{ color: '#a855f7', background: 'rgba(0,0,0,0.3)' }}>
-      {/* Current prompt */}
-      <div className="p-3 rounded mb-3" style={{ background: 'rgba(168,85,247,0.05)', border: '1px solid rgba(168,85,247,0.2)' }}>
+    <div
+      className="h-full flex flex-col p-3 font-mono text-xs"
+      style={{ color: '#a855f7', background: 'rgba(0,0,0,0.3)' }}
+    >
+      <div
+        className="p-3 rounded mb-3"
+        style={{ background: 'rgba(168,85,247,0.05)', border: '1px solid rgba(168,85,247,0.2)' }}
+      >
         <div className="flex items-center gap-2 mb-2">
           <Lightbulb size={10} style={{ color: '#a855f7' }} />
-          <span className="text-[9px] tracking-wider" style={{ color: '#7c3aed' }}>IDEATION PROMPT #{currentPrompt + 1}</span>
+          <span className="text-[9px] tracking-wider" style={{ color: '#7c3aed' }}>
+            IDEATION PROMPT #{currentPrompt + 1}
+          </span>
         </div>
         <p className="text-[11px] leading-relaxed" style={{ color: '#d8b4fe' }}>
           {ideationPrompts[currentPrompt]}
         </p>
         <div className="flex items-center gap-2 mt-3">
           <button
+            type="button"
             onClick={() => setCurrentPrompt((currentPrompt + 1) % ideationPrompts.length)}
             className="flex items-center gap-1 px-2 py-1 rounded text-[9px] tracking-wider transition-all"
             style={{ background: 'rgba(168,85,247,0.15)', border: '1px solid rgba(168,85,247,0.3)', color: '#a855f7' }}
@@ -52,6 +56,7 @@ export default function SynthWindow() {
             <Shuffle size={8} /> NEXT
           </button>
           <button
+            type="button"
             onClick={handleCopy}
             className="flex items-center gap-1 px-2 py-1 rounded text-[9px] tracking-wider transition-all"
             style={{ background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.2)', color: '#7c3aed' }}
@@ -61,11 +66,12 @@ export default function SynthWindow() {
         </div>
       </div>
 
-      {/* Cross-pollination engine */}
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-2">
           <Sparkles size={10} style={{ color: '#a855f7' }} />
-          <span className="text-[9px] tracking-wider" style={{ color: '#7c3aed' }}>CROSS-POLLINATION ENGINE</span>
+          <span className="text-[9px] tracking-wider" style={{ color: '#7c3aed' }}>
+            CROSS-POLLINATION ENGINE
+          </span>
         </div>
         <div className="space-y-1.5">
           {connections.map((c, i) => (
@@ -84,6 +90,7 @@ export default function SynthWindow() {
           ))}
         </div>
         <button
+          type="button"
           onClick={generateConnections}
           className="mt-2 w-full py-1.5 rounded text-[9px] tracking-wider transition-all"
           style={{

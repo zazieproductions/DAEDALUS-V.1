@@ -1,0 +1,27 @@
+name: Module proposal
+description: Propose a change that stays inside the OS fiction.
+title: "[MODULE] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: fiction
+    attributes:
+      label: Diegetic description
+      description: Write it as the machine would. What does the operator see?
+    validations:
+      required: true
+  - type: dropdown
+    id: honesty
+    attributes:
+      label: Proposed status
+      options:
+        - working
+        - partial
+        - planned
+    validations:
+      required: true
+  - type: textarea
+    id: out
+    attributes:
+      label: What this is not
+      description: Name the product features you are deliberately not adding.

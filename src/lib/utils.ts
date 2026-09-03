@@ -1,25 +1,36 @@
+import { cortexLabels } from '../data/catalogs';
+
+const GLITCH_CHARS = '▓░▒█▀▄╔╗╚╝║═╬╣╠╩╦';
+
+/** Sparse character substitution — enough to read as signal decay, not enough to destroy the line. */
 export function glitchText(text: string): string {
-  const glitchChars = '▓░▒█▀▄╔╗╚╝║═╬╣╠╩╦';
   return text
     .split('')
-    .map((c) => (Math.random() < 0.05 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : c))
+    .map((c) => (Math.random() < 0.05 ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)] : c))
     .join('');
 }
 
-export function generateSynapseData() {
-  const nodes: { x: number; y: number; r: number; label: string }[] = [];
-  const labels = ['ART', 'MATH', 'MUSIC', 'CODE', 'PHIL', 'LIT', 'BIO', 'PHYS', 'LING', 'ARCH', 'CHEM', 'PSYCH'];
-  labels.forEach((label, i) => {
-    const angle = (i / labels.length) * Math.PI * 2;
-    const radius = 80 + Math.random() * 40;
-    nodes.push({
-      x: 150 + Math.cos(angle) * radius,
-      y: 130 + Math.sin(angle) * radius,
+export interface SynapseNode {
+  x: number;
+  y: number;
+  r: number;
+  label: string;
+}
+
+export function generateSynapseData(width = 400, height = 280): SynapseNode[] {
+  const cx = width / 2;
+  const cy = height / 2;
+  const baseRadius = Math.min(width, height) * 0.32;
+  return cortexLabels.map((label, i) => {
+    const angle = (i / cortexLabels.length) * Math.PI * 2;
+    const radius = baseRadius + Math.random() * (baseRadius * 0.35);
+    return {
+      x: cx + Math.cos(angle) * radius,
+      y: cy + Math.sin(angle) * radius,
       r: 4 + Math.random() * 8,
       label,
-    });
+    };
   });
-  return nodes;
 }
 
 export function getTimeGreeting(hour: number): string {
@@ -33,4 +44,18 @@ export function getTimeGreeting(hour: number): string {
 
 export function randomHex(): string {
   return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+}
+
+export function shouldSkipBoot(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const q = new URLSearchParams(window.location.search);
+    return q.get('skipBoot') === '1' || q.get('boot') === 'skip';
+  } catch {
+    return false;
+  }
+}
+
+export function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, n));
 }

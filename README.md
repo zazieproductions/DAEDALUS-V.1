@@ -41,6 +41,8 @@ The aesthetic is produced by **constraints** — windows that refuse to die, tel
 
 **Live deployment:** [https://zazieproductions.github.io/DAEDALUS-V.1/](https://zazieproductions.github.io/DAEDALUS-V.1/)
 
+GitHub Pages is the intended host. First enable: **Settings → Pages → Build and deployment → Source: GitHub Actions**. The workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) publishes `dist/` with `BASE_PATH=/DAEDALUS-V.1/`. Until that toggle is on, the URL above 404s even though CI already builds the artifact.
+
 ## Field notes
 
 <p align="center">

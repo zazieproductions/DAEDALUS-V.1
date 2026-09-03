@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { graphCategories } from '../../data/catalogs';
 
 interface GraphNode {
   id: string;
@@ -15,30 +16,31 @@ interface GraphEdge {
   target: string;
 }
 
-const categories = [
-  { name: 'Philosophy', color: '#ff6b6b', nodes: ['Ontology', 'Ethics', 'Aesthetics', 'Logic'] },
-  { name: 'Science', color: '#4ecdc4', nodes: ['Physics', 'Biology', 'Chemistry', 'Complexity'] },
-  { name: 'Art', color: '#ffe66d', nodes: ['Music', 'Visual', 'Literature', 'Cinema'] },
-  { name: 'Tech', color: '#a855f7', nodes: ['AI', 'Crypto', 'Biotech', 'Quantum'] },
-];
-
 export default function GraphWindow() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const nodesRef = useRef<GraphNode[]>([]);
   const edgesRef = useRef<GraphEdge[]>([]);
   const animRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
+  const hoveredRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const nodes: GraphNode[] = [];
-    const edges: GraphEdge[] = [];
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
     const cw = 360;
     const ch = 260;
+    canvas.width = cw;
+    canvas.height = ch;
 
-    categories.forEach((cat, ci) => {
+    const nodes: GraphNode[] = [];
+    const edges: GraphEdge[] = [];
+
+    graphCategories.forEach((cat, ci) => {
       cat.nodes.forEach((name, ni) => {
-        const angle = (ci * cat.nodes.length + ni) / (categories.length * 4) * Math.PI * 2;
+        const angle = ((ci * cat.nodes.length + ni) / (graphCategories.length * 4)) * Math.PI * 2;
         nodes.push({
           id: name,
           x: cw / 2 + Math.cos(angle) * (60 + Math.random() * 60),
@@ -50,7 +52,6 @@ export default function GraphWindow() {
         });
       });
 
-      // Intra-category edges
       for (let i = 0; i < cat.nodes.length; i++) {
         for (let j = i + 1; j < cat.nodes.length; j++) {
           if (Math.random() < 0.6) edges.push({ source: cat.nodes[i], target: cat.nodes[j] });
@@ -58,7 +59,6 @@ export default function GraphWindow() {
       }
     });
 
-    // Inter-category edges
     for (let i = 0; i < 8; i++) {
       const a = nodes[Math.floor(Math.random() * nodes.length)];
       const b = nodes[Math.floor(Math.random() * nodes.length)];
@@ -68,12 +68,7 @@ export default function GraphWindow() {
     nodesRef.current = nodes;
     edgesRef.current = edges;
 
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d')!;
-    canvas.width = cw;
-    canvas.height = ch;
-
-    const getColor = (cat: string) => categories.find(c => c.name === cat)?.color || '#fff';
+    const getColor = (cat: string) => graphCategories.find((c) => c.name === cat)?.color || '#fff';
 
     const animate = () => {
       ctx.fillStyle = 'rgba(10, 10, 20, 0.2)';
@@ -81,13 +76,10 @@ export default function GraphWindow() {
 
       const ns = nodesRef.current;
 
-      // Simple force simulation
       for (let i = 0; i < ns.length; i++) {
-        // Center gravity
         ns[i].vx += (cw / 2 - ns[i].x) * 0.0005;
         ns[i].vy += (ch / 2 - ns[i].y) * 0.0005;
 
-        // Repulsion
         for (let j = i + 1; j < ns.length; j++) {
           const dx = ns[i].x - ns[j].x;
           const dy = ns[i].y - ns[j].y;
@@ -99,7 +91,6 @@ export default function GraphWindow() {
           ns[j].vy -= dy * force * 0.01;
         }
 
-        // Mouse attraction
         const mdx = mouseRef.current.x - ns[i].x;
         const mdy = mouseRef.current.y - ns[i].y;
         const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
@@ -116,10 +107,23 @@ export default function GraphWindow() {
         ns[i].y = Math.max(20, Math.min(ch - 20, ns[i].y));
       }
 
-      // Draw edges
-      edgesRef.current.forEach(e => {
-        const s = ns.find(n => n.id === e.source)!;
-        const t = ns.find(n => n.id === e.target)!;
+      let nearestId: string | null = null;
+      let nearestDist = 16;
+      for (const n of ns) {
+        const dx = mouseRef.current.x - n.x;
+        const dy = mouseRef.current.y - n.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < nearestDist) {
+          nearestId = n.id;
+          nearestDist = d;
+        }
+      }
+      hoveredRef.current = nearestId;
+
+      edgesRef.current.forEach((e) => {
+        const s = ns.find((n) => n.id === e.source);
+        const t = ns.find((n) => n.id === e.target);
+        if (!s || !t) return;
         const isCross = s.category !== t.category;
         ctx.strokeStyle = isCross ? 'rgba(255,255,255,0.06)' : `${getColor(s.category)}30`;
         ctx.lineWidth = isCross ? 0.5 : 0.8;
@@ -129,12 +133,10 @@ export default function GraphWindow() {
         ctx.stroke();
       });
 
-      // Draw nodes
-      ns.forEach(n => {
+      ns.forEach((n) => {
         const color = getColor(n.category);
-        const isHovered = hoveredNode === n.id;
+        const isHovered = hoveredRef.current === n.id;
 
-        // Glow
         const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.size * 4);
         grad.addColorStop(0, color + '40');
         grad.addColorStop(1, 'transparent');
@@ -172,7 +174,7 @@ export default function GraphWindow() {
       cancelAnimationFrame(animRef.current);
       canvas.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [hoveredNode]);
+  }, []);
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'rgba(0,0,0,0.3)' }}>
@@ -180,10 +182,12 @@ export default function GraphWindow() {
         <canvas ref={canvasRef} className="w-full h-full" />
       </div>
       <div className="flex items-center justify-center gap-3 p-2" style={{ borderTop: '1px solid #1a1a2e' }}>
-        {categories.map(c => (
+        {graphCategories.map((c) => (
           <div key={c.name} className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-full" style={{ background: c.color }} />
-            <span className="font-mono text-[8px] tracking-wider" style={{ color: c.color + '90' }}>{c.name.toUpperCase()}</span>
+            <span className="font-mono text-[8px] tracking-wider" style={{ color: c.color + '90' }}>
+              {c.name.toUpperCase()}
+            </span>
           </div>
         ))}
       </div>

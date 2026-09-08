@@ -148,6 +148,13 @@ Also fixed:
   to every visitor. Recoverable from `git show 4d535f2:index.html`. Rationale
   and trade-offs:
   [ADR 0004](docs/decisions/0004-remove-vendor-telemetry.md).
+- **`.vite-source-tags.js` from the build and from version control.** The
+  vendor plugin stamped every JSX element with a `data-source-loc` attribute
+  for the element picker above; with the picker gone it had no consumer. Its
+  guarded loader in `vite.config.ts` had never actually resolved — Vite bundles
+  the config to a temp file, so the relative import failed silently — making it
+  dead code that documented behaviour which did not occur. The file remains on
+  disk and in history.
 - Dead state and unused imports across the window components, including the
   `hoveredNode` setter that was never called.
 

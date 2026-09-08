@@ -22,8 +22,9 @@ production bundle, ran for every visitor, and was invisible in the diff of any
 normal change.
 
 A companion file, `.vite-source-tags.js`, is a Vite plugin that annotates every
-JSX element with its source location so the picker can map DOM nodes back to
-files. It was already git-ignored while being loaded by `vite.config.ts`.
+JSX element with a `data-source-loc` attribute so the picker can map DOM nodes
+back to files. Its own header comment describes it as infrastructure copied
+into generated workspaces by the platform's tooling, not as project code.
 
 ## Decision
 
@@ -31,8 +32,10 @@ Remove all three inlined scripts from `index.html`. Replace them with a clean
 document: meta description, Open Graph tags, `theme-color`, a `<noscript>`
 notice, the font preconnects and the module entry point.
 
-Keep the optional loader for `.vite-source-tags.js` in `vite.config.ts`, guarded
-so a missing file degrades silently — the normal case for a fresh clone.
+Stop loading `.vite-source-tags.js` from `vite.config.ts`, and untrack it. The
+file stays on disk (and is git-ignored), because the hosting platform re-supplies
+it and someone may want the preview integration back; it simply no longer
+participates in this project's builds.
 
 ## Rationale
 
@@ -53,7 +56,13 @@ so a missing file degrades silently — the normal case for a fresh clone.
   previewed inside that platform's editor. Local development, the production
   build and every deployment target are unaffected.
 - Anyone who wants the picker back can recover it from git history:
-  `git show 4d535f2:index.html`. It is preserved, not destroyed.
+  `git show 4d535f2:index.html` and `git show 4d535f2:.vite-source-tags.js`. It
+  is preserved, not destroyed.
+- `vite.config.ts` loses a top-level `await` and a dynamic import that, on
+  inspection, never resolved anyway — Vite bundles the config to a temporary
+  file, so the relative specifier `./.vite-source-tags.js` failed silently and
+  the plugin had not been active in dev or in builds. The guarded loader was
+  dead code describing behaviour that did not happen.
 - `SECURITY.md` can now state truthfully that the application collects nothing.
 
 ## Note on the boundary

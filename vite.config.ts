@@ -1,4 +1,4 @@
-import { loadEnv, type PluginOption } from 'vite';
+import { loadEnv } from 'vite';
 // Vitest's `defineConfig` is Vite's, widened to accept the `test` block below.
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
@@ -8,31 +8,18 @@ import { fileURLToPath, URL } from 'node:url';
 /**
  * Vite configuration.
  *
- * Three things worth knowing:
+ * Two things worth knowing:
  *
  *  - `@/*` resolves to `src/*` everywhere (Vite, TypeScript and Vitest all
  *    share this alias), so no module ever imports through `../../..`.
  *  - `VITE_BASE_PATH` lets the same build be served from a sub-path, which is
  *    what a GitHub Pages project site needs.
- *  - The optional `.vite-source-tags.js` plugin is local preview
- *    instrumentation (see `docs/decisions/0004-remove-vendor-telemetry.md`).
- *    It is git-ignored, so this loader must degrade silently when the file is
- *    absent — the normal case for a fresh clone.
+ *
+ * The plugin list is deliberately short. `.vite-source-tags.js` — the vendor
+ * plugin that stamped every JSX element with a `data-source-loc` attribute —
+ * is no longer loaded: its only consumer was the element picker removed in
+ * `docs/decisions/0004-remove-vendor-telemetry.md`.
  */
-async function loadOptionalSourceTagsPlugin(): Promise<PluginOption | null> {
-  try {
-    // Indirected through a variable so TypeScript does not try to resolve a
-    // file that is intentionally absent from the repository.
-    const specifier: string = './.vite-source-tags.js';
-    const module = (await import(specifier)) as { sourceTags?: () => PluginOption };
-    return module.sourceTags?.() ?? null;
-  } catch {
-    return null;
-  }
-}
-
-const sourceTags = await loadOptionalSourceTagsPlugin();
-
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
 
@@ -53,7 +40,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       ...(allowedHosts.length > 0 ? { allowedHosts } : {}),
     },
-    plugins: [react(), tailwindcss(), ...(sourceTags ? [sourceTags] : [])],
+    plugins: [react(), tailwindcss()],
     envPrefix: 'VITE_',
     resolve: {
       alias: {

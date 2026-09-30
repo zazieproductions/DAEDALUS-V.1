@@ -1,20 +1,36 @@
-import { useOSStore } from './lib/store';
-import BootSequence from './components/BootSequence';
-import TopBar from './components/TopBar';
-import Desktop from './components/Desktop';
+import { BootSequence } from '@/components/boot/BootSequence';
+import { Desktop } from '@/components/shell/Desktop';
+import { TopBar } from '@/components/shell/TopBar';
+import { surface } from '@/config/theme';
+import { useOSStore } from '@/store/osStore';
 
-export default function App() {
-  const bootComplete = useOSStore((s) => s.bootComplete);
+/**
+ * Root composition.
+ *
+ * Two states, one switch: the BIOS, then the desktop environment. There is no
+ * router — DAEDALUS is a single machine, and every "page" is a window.
+ */
+export function App() {
+  const bootComplete = useOSStore((store) => store.bootComplete);
 
   return (
-    <div className="w-screen h-screen overflow-hidden" style={{ background: '#0a0a14', fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", monospace' }}>
-      {!bootComplete && <BootSequence />}
-      {bootComplete && (
+    <div
+      className="w-screen h-screen overflow-hidden"
+      style={{
+        background: surface.background,
+        fontFamily: '"JetBrains Mono", "Fira Code", "SF Mono", monospace',
+      }}
+    >
+      {bootComplete ? (
         <>
           <TopBar />
           <Desktop />
         </>
+      ) : (
+        <BootSequence />
       )}
     </div>
   );
 }
+
+export default App;

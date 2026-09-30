@@ -1,0 +1,55 @@
+name: Bug report
+description: Something in the OS misbehaves.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time. A short reproduction beats a long description.
+
+  - type: dropdown
+    id: window
+    attributes:
+      label: Which window?
+      options:
+        - Shell (top bar, dock, window chrome)
+        - Boot sequence
+        - TERMINAL
+        - CORTEX MAPPER
+        - BIBLIOTHECA UNIVERSALIS
+        - SYNTH
+        - KNOWLEDGE GRAPH
+        - MANIFESTO
+        - ORACLE
+        - CHRONOS
+        - LEXICON
+        - MOODBOARD
+        - Build / tooling
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. npm run dev
+        2. Open ORACLE from the dock
+        3. ...
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and OS
+      placeholder: Firefox 133 on Fedora 41
+    validations:
+      required: true

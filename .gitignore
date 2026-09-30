@@ -1,4 +1,12 @@
-# Logs
+# ---------------------------------------------------------------- artefacts
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+*.tsbuildinfo
+
+# -------------------------------------------------------------------- logs
 logs
 *.log
 npm-debug.log*
@@ -7,20 +15,32 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# ------------------------------------------------------------- environment
+# `.env.example` is committed; real environment files never are.
+.env
+.env.*
+!.env.example
 
-# Editor directories and files
+# ----------------------------------------------------------------- tooling
+# Local preview instrumentation injected by the hosting workspace; see
+# docs/decisions/0004-remove-vendor-telemetry.md.
+.vite-source-tags.js
+.vercel
+.vite
+.eslintcache
+.stylelintcache
+
+# ------------------------------------------------------------------ editors
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.vite-source-tags.js
-.vercel
+
+# ----------------------------------------------------------------------- os
+.DS_Store
+Thumbs.db

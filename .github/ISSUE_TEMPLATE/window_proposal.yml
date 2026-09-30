@@ -1,0 +1,46 @@
+name: Window proposal
+description: Propose a new window for the desktop, or a new capability for an existing one.
+labels: [enhancement, window-proposal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        DAEDALUS grows one window at a time. A good proposal makes an argument
+        about *thinking*, not just about a feature — see `docs/creative-methodology.md`.
+
+  - type: input
+    id: title
+    attributes:
+      label: Window name
+      description: All caps, ideally with a second name in another alphabet.
+      placeholder: ENTROPY // ΧΑΟΣ
+    validations:
+      required: true
+
+  - type: textarea
+    id: thesis
+    attributes:
+      label: What claim does it make?
+      description: One or two sentences. Every window in the OS is an argument.
+      placeholder: That constraint, not freedom, is what produces invention.
+    validations:
+      required: true
+
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: What does it actually do?
+      description: Interactions, data, visuals. Be concrete.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Is this implemented, prototyped, or purely speculative?
+      options:
+        - Speculative — an idea
+        - Prototyped elsewhere — I have code
+        - I intend to implement it
+    validations:
+      required: true

@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens.
+ *
+ * Mirrored in `src/config/theme.ts` for inline styles; the two are asserted to
+ * match by `tests/unit/theme-tokens.test.ts`, so change them together.
+ */
+@theme {
+  --color-background: #0a0a14;
+  --color-foreground: #e0e0e0;
+  --color-primary: #00ff88;
+  --color-accent: #a855f7;
+  --color-surface: #1a1a2e;
+  --color-border: #2a2a4a;
+}
+
+/*
+ * JetBrains Mono is loaded from Google Fonts in `index.html` (preconnected, so
+ * it does not block first paint). The stack below degrades to whatever
+ * monospace face the platform offers — the interface is legible either way.
+ */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Hairline scrollbars — window content should never feel like a web page. */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::selection {
+  background: rgba(0, 255, 136, 0.3);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------- motion --- */
+
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(2px, -2px);
+  }
+  60% {
+    transform: translate(-1px, -1px);
+  }
+  80% {
+    transform: translate(1px, 1px);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-glitch {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/*
+ * Honour the platform's motion preference. The canvas simulations opt out in
+ * JavaScript (see `useAnimationCanvas`); this covers the CSS-driven pulses.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Screen-reader-only text, used to expand abbreviated metric labels. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
